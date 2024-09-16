@@ -1,9 +1,11 @@
 package com.lld4.productservice.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lld4.productservice.dtos.FakeStoreProductDto;
 import com.lld4.productservice.models.Category;
 import com.lld4.productservice.models.Product;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
@@ -13,8 +15,11 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @Service
-public class FakeStoreProductService implements  ProductService{
+public class FakeStoreProductService implements ProductService {
 
     RestTemplate restTemplate;
     RestClient restClient;
@@ -39,19 +44,17 @@ public class FakeStoreProductService implements  ProductService{
 
         if (fakeStoreProductDto == null)
             return null;
-        return convert(fakeStoreProductDto);
-
+        return convertfromFakeProductDTOToProduct(fakeStoreProductDto);
 
     }
-
 
 
     @Override
     public List<Product> getAllProducts() {
         FakeStoreProductDto[] fakeStoreProductDto = restClient.get().uri("https://fakestoreapi.com/products").retrieve().body(FakeStoreProductDto[].class);
         List<Product> products = new ArrayList<>();
-        for(FakeStoreProductDto fakeStoreProductDto1 : fakeStoreProductDto){
-            Product product = convert(fakeStoreProductDto1);
+        for (FakeStoreProductDto fakeStoreProductDto1 : fakeStoreProductDto) {
+            Product product = convertfromFakeProductDTOToProduct(fakeStoreProductDto1);
             products.add(product);
         }
         System.out.println("Total products size : " + products.size());
@@ -65,7 +68,23 @@ public class FakeStoreProductService implements  ProductService{
 
     @Override
     public Product addProduct(Product product) {
-        return null;
+        FakeStoreProductDto fakeStoreProductDto = convertfromProductToFakeStoreProductDTO(product);
+        System.out.println("DTO : " + fakeStoreProductDto);
+        System.out.println("*****************");
+
+        String url = "https://fakestoreapi.com/products";
+
+        FakeStoreProductDto body = restClient.
+                post()
+                .uri(url)
+                .contentType(APPLICATION_JSON)
+                .body(fakeStoreProductDto)
+                .retrieve()
+                .body(FakeStoreProductDto.class);
+
+       if(body != null)
+        return convertfromFakeProductDTOToProduct(body);
+       return null;
     }
 
     @Override
@@ -78,7 +97,7 @@ public class FakeStoreProductService implements  ProductService{
 
     }
 
-    private Product convert(FakeStoreProductDto fakeStoreProductDto) {
+    private Product convertfromFakeProductDTOToProduct(FakeStoreProductDto fakeStoreProductDto) {
         Product product = new Product();
         product.setId(fakeStoreProductDto.getId());
         product.setDescription(fakeStoreProductDto.getDescription());
@@ -92,5 +111,20 @@ public class FakeStoreProductService implements  ProductService{
         product.setCategory(category);
         return product;
 
+    }
+
+    private FakeStoreProductDto convertfromProductToFakeStoreProductDTO(Product product) {
+        FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
+        if (product.getId() != null)
+            fakeStoreProductDto.setId(product.getId());
+        fakeStoreProductDto.setDescription(product.getDescription());
+        fakeStoreProductDto.setTitle(product.getTitle());
+        fakeStoreProductDto.setPrice(product.getPrice());
+        fakeStoreProductDto.setImageUrl(product.getImageUrl());
+        Category category = product.getCategory();
+        if (category != null) {
+            fakeStoreProductDto.setCategory(category.getDescription());
+        }
+        return fakeStoreProductDto;
     }
 }
