@@ -83,11 +83,14 @@ public class FakeStoreProductService implements ProductService {
     @Override
     public Product replaceProduct(Long id, Product product) {
         FakeStoreProductDto fakeStoreProductDto = convertfromProductToFakeStoreProductDTO(product);
+
+        // Via RestTemplate
         // We'll be directly calling the execute method of rest template for the PUT case. Underlying execute method is getting called from other methods , so we change it according to our need
         /*RequestCallback requestCallback = restTemplate.httpEntityCallback(fakeStoreProductDto, FakeStoreProductDto.class);
         HttpMessageConverterExtractor<FakeStoreProductDto> responseExtractor = new HttpMessageConverterExtractor(FakeStoreProductDto.class, restTemplate.getMessageConverters());
         FakeStoreProductDto restResponse = restTemplate.execute(url + id, HttpMethod.PUT, requestCallback, responseExtractor);*/
 
+        // Via RestClient
         FakeStoreProductDto restResponse = restClient.put().uri(url + id).contentType(APPLICATION_JSON).body(fakeStoreProductDto).retrieve().body(FakeStoreProductDto.class);
         return convertfromFakeProductDTOToProduct(restResponse);
     }
