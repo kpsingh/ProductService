@@ -110,8 +110,10 @@ public class FakeStoreProductService implements ProductService {
 
 
     @Override
-    public void deleteProduct(Long id) {
-
+    public Product deleteProduct(Long id) {
+        FakeStoreProductDto body = restClient.delete().uri(url + id).retrieve().body(FakeStoreProductDto.class);
+        System.out.println("Product Deleted Successfully");
+        return convertfromFakeProductDTOToProduct(body);
     }
 
     private Product convertfromFakeProductDTOToProduct(FakeStoreProductDto fakeStoreProductDto) {

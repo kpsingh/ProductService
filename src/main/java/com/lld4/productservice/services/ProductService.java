@@ -16,6 +16,6 @@ public interface ProductService {
     // this will partially update the product
     public Product updateProduct(Long id, Product product);
 
-    public void deleteProduct(Long id);
+    public Product deleteProduct(Long id);
 
 }
