@@ -4,13 +4,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lld4.productservice.dtos.FakeStoreProductDto;
 import com.lld4.productservice.models.Category;
 import com.lld4.productservice.models.Product;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpMessageConverterExtractor;
+import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
+
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +31,8 @@ public class FakeStoreProductService implements ProductService {
     RestTemplate restTemplate;
     RestClient restClient;
 
+    private final String url = "https://fakestoreapi.com/products/";
+
 
     FakeStoreProductService(RestTemplate restTemplate, RestClient restClient) {
         this.restTemplate = restTemplate;
@@ -35,15 +44,11 @@ public class FakeStoreProductService implements ProductService {
 
         //FakeStoreProductDto fakeStoreProductDto =   restTemplate.getForObject("https://fakestoreapi.com/products/" + id, FakeStoreProductDto.class);
 
-        FakeStoreProductDto fakeStoreProductDto = restClient.get()
-                .uri("https://fakestoreapi.com/products/" + id)
-                .retrieve()
-                .body(FakeStoreProductDto.class);
+        FakeStoreProductDto fakeStoreProductDto = restClient.get().uri("https://fakestoreapi.com/products/" + id).retrieve().body(FakeStoreProductDto.class);
 
         System.out.println(fakeStoreProductDto);
 
-        if (fakeStoreProductDto == null)
-            return null;
+        if (fakeStoreProductDto == null) return null;
         return convertfromFakeProductDTOToProduct(fakeStoreProductDto);
 
     }
@@ -69,28 +74,42 @@ public class FakeStoreProductService implements ProductService {
     @Override
     public Product addProduct(Product product) {
         FakeStoreProductDto fakeStoreProductDto = convertfromProductToFakeStoreProductDTO(product);
-        System.out.println("DTO : " + fakeStoreProductDto);
-        System.out.println("*****************");
+        FakeStoreProductDto body = restClient.post().uri(url).contentType(APPLICATION_JSON).body(fakeStoreProductDto).retrieve().body(FakeStoreProductDto.class);
 
-        String url = "https://fakestoreapi.com/products";
+        if (body == null) return null;
+        return convertfromFakeProductDTOToProduct(body);
 
-        FakeStoreProductDto body = restClient.
-                post()
-                .uri(url)
-                .contentType(APPLICATION_JSON)
-                .body(fakeStoreProductDto)
-                .retrieve()
+    }
+
+    // We'll use the PUT method here, since we want to replace the product completely.
+    @Override
+    public Product replaceProduct(Long id, Product product) {
+        FakeStoreProductDto fakeStoreProductDto = convertfromProductToFakeStoreProductDTO(product);
+        // We'll be directly calling the execute method of rest template for the PUT case. Underlying execute method is getting called from other methods , so we change it according to our need
+        RequestCallback requestCallback = restTemplate.httpEntityCallback(fakeStoreProductDto, FakeStoreProductDto.class);
+        HttpMessageConverterExtractor<FakeStoreProductDto> responseExtractor = new HttpMessageConverterExtractor(FakeStoreProductDto.class, restTemplate.getMessageConverters());
+        FakeStoreProductDto restResponse = restTemplate.execute(url + id, HttpMethod.PUT, requestCallback, responseExtractor);
+
+        return convertfromFakeProductDTOToProduct(restResponse);
+    }
+
+
+    // this will be a PATCH request
+    @Override
+    public Product updateProduct(Long id, Product product) {
+        FakeStoreProductDto fakeStoreProductDto = convertfromProductToFakeStoreProductDTO(product);
+        String fullUrl = url + id;
+
+        FakeStoreProductDto restResponse = restClient.patch()  // Make a PATCH request
+                .uri(fullUrl)
+                .contentType(APPLICATION_JSON) // Set content type
+                .body(fakeStoreProductDto)  // Pass the DTO as the body of the request
+                .retrieve()  // Execute the request and expect a response
                 .body(FakeStoreProductDto.class);
 
-       if(body != null)
-        return convertfromFakeProductDTOToProduct(body);
-       return null;
+        return convertfromFakeProductDTOToProduct(restResponse);
     }
 
-    @Override
-    public Product updateProduct(Product product) {
-        return null;
-    }
 
     @Override
     public void deleteProduct(Long id) {
@@ -115,8 +134,7 @@ public class FakeStoreProductService implements ProductService {
 
     private FakeStoreProductDto convertfromProductToFakeStoreProductDTO(Product product) {
         FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
-        if (product.getId() != null)
-            fakeStoreProductDto.setId(product.getId());
+        if (product.getId() != null) fakeStoreProductDto.setId(product.getId());
         fakeStoreProductDto.setDescription(product.getDescription());
         fakeStoreProductDto.setTitle(product.getTitle());
         fakeStoreProductDto.setPrice(product.getPrice());

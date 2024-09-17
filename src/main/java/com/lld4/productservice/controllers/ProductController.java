@@ -37,12 +37,13 @@ public class ProductController {
     // Partial Update - PATCH
     @PatchMapping("/{productId}")
     public Product updateProductbyId(@PathVariable("productId") Long id, @RequestBody Product product) {
-        return product;
+        return productService.updateProduct(id, product);
     }
 
     // Complete Update - PUT
     @PutMapping("/{productId}")
-    public void replaceProductById(@PathVariable("productId") String id, @RequestBody Product product) {
+    public Product replaceProductById(@PathVariable("productId") Long id, @RequestBody Product product) {
+        return productService.replaceProduct(id, product);
 
     }
 

@@ -9,7 +9,13 @@ public interface ProductService {
     public List<Product> getAllProducts();
     public List<Product> getProductsByCategoryId(Long categoryId);
     public Product addProduct(Product product);
-    public Product updateProduct(Product product);
+
+    // completely replace the product with new product details
+    public Product replaceProduct(Long id, Product product);
+
+    // this will partially update the product
+    public Product updateProduct(Long id, Product product);
+
     public void deleteProduct(Long id);
 
 }
