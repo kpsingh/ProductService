@@ -91,7 +91,12 @@ public class FakeStoreProductService implements ProductService {
         FakeStoreProductDto restResponse = restTemplate.execute(url + id, HttpMethod.PUT, requestCallback, responseExtractor);*/
 
         // Via RestClient
-        FakeStoreProductDto restResponse = restClient.put().uri(url + id).contentType(APPLICATION_JSON).body(fakeStoreProductDto).retrieve().body(FakeStoreProductDto.class);
+        FakeStoreProductDto restResponse = restClient.put()
+                .uri(url + id)
+                .contentType(APPLICATION_JSON)
+                .body(fakeStoreProductDto)
+                .retrieve()
+                .body(FakeStoreProductDto.class);
         return convertfromFakeProductDTOToProduct(restResponse);
     }
 
