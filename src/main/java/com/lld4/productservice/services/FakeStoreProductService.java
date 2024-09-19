@@ -1,17 +1,10 @@
 package com.lld4.productservice.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lld4.productservice.dtos.FakeStoreProductDto;
 import com.lld4.productservice.models.Category;
 import com.lld4.productservice.models.Product;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import com.lld4.productservice.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpMessageConverterExtractor;
-import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
 public class FakeStoreProductService implements ProductService {
@@ -44,9 +36,9 @@ public class FakeStoreProductService implements ProductService {
 
         FakeStoreProductDto fakeStoreProductDto = restClient.get().uri("https://fakestoreapi.com/products/" + id).retrieve().body(FakeStoreProductDto.class);
 
-        System.out.println(fakeStoreProductDto);
+        if (fakeStoreProductDto == null)
+            throw new UserNotFoundException("user not found for id " + id);
 
-        if (fakeStoreProductDto == null) return null;
         return convertfromFakeProductDTOToProduct(fakeStoreProductDto);
 
     }
