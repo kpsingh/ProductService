@@ -3,7 +3,7 @@ package com.lld4.productservice.services;
 import com.lld4.productservice.dtos.FakeStoreProductDto;
 import com.lld4.productservice.models.Category;
 import com.lld4.productservice.models.Product;
-import com.lld4.productservice.exceptions.UserNotFoundException;
+import com.lld4.productservice.exceptions.ProductNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
@@ -37,7 +37,7 @@ public class FakeStoreProductService implements ProductService {
         FakeStoreProductDto fakeStoreProductDto = restClient.get().uri("https://fakestoreapi.com/products/" + id).retrieve().body(FakeStoreProductDto.class);
 
         if (fakeStoreProductDto == null)
-            throw new UserNotFoundException("user not found for id " + id);
+            throw new ProductNotFoundException("Product not found for id " + id);
 
         return convertfromFakeProductDTOToProduct(fakeStoreProductDto);
 

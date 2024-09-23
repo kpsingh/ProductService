@@ -1,12 +1,12 @@
 package com.lld4.productservice.controllers;
 
+import com.lld4.productservice.exceptions.InvalidProductException;
 import com.lld4.productservice.models.Product;
 import com.lld4.productservice.services.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,9 @@ public class ProductController {
     // http://localhost:9090/products/5
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        if (id < 1){
+            throw new InvalidProductException("Invalid product id : " + id);
+        }
         Product product = productService.getProductById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
