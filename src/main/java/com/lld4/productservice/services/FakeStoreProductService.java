@@ -34,7 +34,11 @@ public class FakeStoreProductService implements ProductService {
 
         //FakeStoreProductDto fakeStoreProductDto =   restTemplate.getForObject("https://fakestoreapi.com/products/" + id, FakeStoreProductDto.class);
 
-        FakeStoreProductDto fakeStoreProductDto = restClient.get().uri("https://fakestoreapi.com/products/" + id).retrieve().body(FakeStoreProductDto.class);
+        FakeStoreProductDto fakeStoreProductDto = restClient
+                .get()
+                .uri("https://fakestoreapi.com/products/" + id)
+                .retrieve()
+                .body(FakeStoreProductDto.class);
 
         if (fakeStoreProductDto == null)
             throw new ProductNotFoundException("Product not found for id " + id);
@@ -46,7 +50,11 @@ public class FakeStoreProductService implements ProductService {
 
     @Override
     public List<Product> getAllProducts() {
-        FakeStoreProductDto[] fakeStoreProductDto = restClient.get().uri("https://fakestoreapi.com/products").retrieve().body(FakeStoreProductDto[].class);
+        FakeStoreProductDto[] fakeStoreProductDto = restClient
+                .get()
+                .uri("https://fakestoreapi.com/products")
+                .retrieve()
+                .body(FakeStoreProductDto[].class);
         List<Product> products = new ArrayList<>();
         for (FakeStoreProductDto fakeStoreProductDto1 : fakeStoreProductDto) {
             Product product = convertfromFakeProductDTOToProduct(fakeStoreProductDto1);
@@ -64,9 +72,16 @@ public class FakeStoreProductService implements ProductService {
     @Override
     public Product addProduct(Product product) {
         FakeStoreProductDto fakeStoreProductDto = convertfromProductToFakeStoreProductDTO(product);
-        FakeStoreProductDto body = restClient.post().uri(url).contentType(APPLICATION_JSON).body(fakeStoreProductDto).retrieve().body(FakeStoreProductDto.class);
+        FakeStoreProductDto body = restClient
+                .post()
+                .uri(url)
+                .contentType(APPLICATION_JSON)
+                .body(fakeStoreProductDto)
+                .retrieve()
+                .body(FakeStoreProductDto.class);
 
-        if (body == null) return null;
+        if (body == null)
+            return null;
         return convertfromFakeProductDTOToProduct(body);
 
     }
