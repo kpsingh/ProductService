@@ -3,6 +3,7 @@ package com.lld4.productservice.controllers;
 import com.lld4.productservice.exceptions.InvalidProductException;
 import com.lld4.productservice.models.Product;
 import com.lld4.productservice.services.ProductService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,9 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
 
-    ProductService productService;
+    private ProductService  productService;
 
-    ProductController(ProductService productService) {
+    ProductController(@Qualifier("selfProductService") ProductService productService) {
         this.productService = productService;
     }
 

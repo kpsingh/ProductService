@@ -15,7 +15,7 @@ import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-@Service
+@Service("fakeStoreProductService")
 public class FakeStoreProductService implements ProductService {
 
     RestTemplate restTemplate;
