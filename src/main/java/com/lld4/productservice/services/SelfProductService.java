@@ -1,16 +1,33 @@
 package com.lld4.productservice.services;
 
+import com.lld4.productservice.exceptions.ProductNotFoundException;
 import com.lld4.productservice.models.Product;
+import com.lld4.productservice.repositories.ProductRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service("selfProductService")
 public class SelfProductService implements  ProductService{
+
+    ProductRepository productRepository;
+    public SelfProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
     @Override
     public Product getProductById(Long id) {
-        return new Product();
+        Optional<Product> productOptional = productRepository.findById(id);
+        //return productOptional.orElseThrow();
+
+        if(productOptional.isPresent()){
+            return productOptional.get();
+        }else{
+            throw new ProductNotFoundException("Product not found with id: " + id);
+        }
+
     }
 
     @Override
