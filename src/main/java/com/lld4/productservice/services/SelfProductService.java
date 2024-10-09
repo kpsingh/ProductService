@@ -42,7 +42,9 @@ public class SelfProductService implements  ProductService{
 
     @Override
     public Product addProduct(Product product) {
-        return null;
+
+        return productRepository.save(product);
+
     }
 
     @Override

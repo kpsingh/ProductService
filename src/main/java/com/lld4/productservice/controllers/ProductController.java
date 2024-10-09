@@ -1,6 +1,8 @@
 package com.lld4.productservice.controllers;
 
+import com.lld4.productservice.dtos.ProductDTO;
 import com.lld4.productservice.exceptions.InvalidProductException;
+import com.lld4.productservice.models.Category;
 import com.lld4.productservice.models.Product;
 import com.lld4.productservice.services.ProductService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,13 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
-    private final ProductService  productService;
+    private final ProductService productService;
 
     ProductController(@Qualifier("selfProductService") ProductService productService) {
         this.productService = productService;
@@ -25,7 +28,7 @@ public class ProductController {
     // http://localhost:9090/products/5
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        if (id < 1){
+        if (id < 1) {
             throw new InvalidProductException("Invalid product id : " + id);
         }
         Product product = productService.getProductById(id);
@@ -39,9 +42,12 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product addProduct(@RequestBody Product product) {
-       return productService.addProduct(product);
+    public Product addProduct(@RequestBody ProductDTO productDto) {
+        Product product = getProductFromDto(productDto);
+        return productService.addProduct(product);
     }
+
+
 
     // Partial Update - PATCH
     @PatchMapping("/{productId}")
@@ -58,6 +64,28 @@ public class ProductController {
 
     @DeleteMapping("/{productId}")
     public Product deleteProductById(@PathVariable("productId") Long id) {
-       return productService.deleteProduct(id);
+        return productService.deleteProduct(id);
+    }
+
+    private Product getProductFromDto(ProductDTO productDto) {
+
+        Product product = new Product();
+        product.setTitle(productDto.getTitle());
+        product.setPrice(productDto.getPrice());
+        product.setDescription(productDto.getDescription());
+        product.setImageUrl(productDto.getImageUrl());
+
+        Category category = new Category();
+        if (productDto.getCategory() != null) {
+            category.setTitle(productDto.getCategory().getTitle());
+            category.setDescription(productDto.getCategory().getDescription());
+        }
+
+        product.setCategory(category);
+        product.setCreatedAt(new Date());
+        product.setUpdatedAt(new Date());
+        product.setIsDeleted(Boolean.FALSE);
+
+        return product;
     }
 }

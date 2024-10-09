@@ -1,10 +1,10 @@
 package com.lld4.productservice.models;
 
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Date;
 
 
 @Getter
@@ -12,8 +12,9 @@ import lombok.Setter;
 @MappedSuperclass
 public class BaseModel {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String createdAt;
-    private String updatedAt;
-    private String isDeleted;
+    private Date createdAt;
+    private Date updatedAt;
+    private Boolean isDeleted;
 }
