@@ -1,5 +1,6 @@
 package com.lld4.productservice.services;
 
+import com.lld4.productservice.exceptions.InvalidProductException;
 import com.lld4.productservice.exceptions.ProductNotFoundException;
 import com.lld4.productservice.models.Product;
 import com.lld4.productservice.repositories.ProductRepository;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
 
 @Service("selfProductService")
 public class SelfProductService implements  ProductService{
@@ -32,7 +35,9 @@ public class SelfProductService implements  ProductService{
 
     @Override
     public List<Product> getAllProducts() {
-        return List.of();
+        List<Product> all = productRepository.findAll();
+        return all;
+
     }
 
     @Override
@@ -54,7 +59,24 @@ public class SelfProductService implements  ProductService{
 
     @Override
     public Product updateProduct(Long id, Product product) {
-        return null;
+        Product oldProduct = getProductById(id);
+        if(product == null)
+            throw new InvalidProductException("Invalid product is passed ");
+
+        // update the description
+        if(product.getDescription() != null ){
+            oldProduct.setDescription(product.getDescription());
+        }
+
+        // update the price
+        if(product.getPrice() != oldProduct.getPrice()){
+            oldProduct.setPrice(product.getPrice());
+        }
+
+        // similarly we can do the check for the other attribute of product to update them
+
+      return   productRepository.save(oldProduct);
+
     }
 
     @Override
