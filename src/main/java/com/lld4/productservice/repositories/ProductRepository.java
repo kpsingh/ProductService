@@ -12,9 +12,11 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    // an example of custom query
+    // an example of custom query - HQL - Hibernate Query Language
     @Query("select p from Product p where p.price > 100000")
     List<Product> findProductWithCustomQuery();
+
+
 
     /* an example of Projection:
         We use projection when we don't want to fetch whole attributes but wat only few attributes
@@ -24,5 +26,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("select p.id as id, p.title as title from Product p where p.id = :id")
     ProductWithIDAndTitle getProductWithIDAndTitle(Long id);
+
+
+
+    /*
+        Native Query : we have to make native as true
+     */
+
+    @Query(value = "select * from product p where p.id = 352", nativeQuery = true)
+    Product custormGetProductById(Long id);
 
 }

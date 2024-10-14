@@ -41,4 +41,10 @@ class ProductServiceApplicationTests {
         System.out.println(productWithIDAndTitle.getTitle());
     }
 
+    @Test
+    public void testnative(){
+        Product p = productRepository.custormGetProductById(352L);
+        System.out.println(p.toString());
+    }
+
 }
