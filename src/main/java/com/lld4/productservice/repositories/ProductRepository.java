@@ -12,7 +12,12 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    // an example of custom query - HQL - Hibernate Query Language
+    /*
+     an example of custom query - HQL - Hibernate Query Language
+
+     HQL uses the concept of OOPs ,  we don't have to remember the table name and its attributes name, we can simply use the model object and its attributes and
+     hibernate will automatically map to respective table
+     */
     @Query("select p from Product p where p.price > 100000")
     List<Product> findProductWithCustomQuery();
 
