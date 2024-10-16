@@ -20,7 +20,8 @@ public class Product extends BaseModel{
     private double price;
     private String description;
     private String imageUrl;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL) // this will make sure when we save the product it will automatically first save the Category object,
+    // otherwise transient state exception could have came
     private Category category;
 
 }
