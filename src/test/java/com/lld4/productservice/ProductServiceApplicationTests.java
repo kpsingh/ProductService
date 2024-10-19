@@ -1,6 +1,7 @@
 package com.lld4.productservice;
 
 import com.lld4.productservice.models.Product;
+import com.lld4.productservice.repositories.CategoryRepository;
 import com.lld4.productservice.repositories.ProductRepository;
 import com.lld4.productservice.repositories.projections.ProductWithIDAndTitle;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,9 @@ class ProductServiceApplicationTests {
 
     @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    CategoryRepository categoryRepository;
 
     @Test
     void contextLoads() {
@@ -45,6 +49,13 @@ class ProductServiceApplicationTests {
     public void testNative(){
         Product p = productRepository.custormGetProductById(352L);
         System.out.println(p.toString());
+    }
+
+
+    // test the case when we delete the categoty it will delete the phones associated with it.
+    @Test
+    public  void deleteByCatId(){
+        categoryRepository.deleteById(3L);
     }
 
 }

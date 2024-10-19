@@ -1,10 +1,11 @@
 package com.lld4.productservice.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,4 +14,7 @@ import lombok.Setter;
 public class Category extends BaseModel {
     private String title;
     private String description;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
+    private List<Product> product; // list of product - one categoty can have many products
 }
