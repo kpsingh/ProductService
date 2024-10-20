@@ -21,7 +21,7 @@ public class Product extends BaseModel {
     // @ManyToOne(cascade = CascadeType.ALL) // this will make sure when we save the product it will automatically first save the Category object,
     // otherwise transient state exception could have came./ this will do lelete as well, if you delete product then categoty also get delited
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER) // it only applicable to saving object
-    private Category category;
+    private Category category; // by default, it is EAGER fetch, fetch = FetchType.EAGER
 
 }
 
