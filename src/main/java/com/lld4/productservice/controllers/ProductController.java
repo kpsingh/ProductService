@@ -1,9 +1,12 @@
 package com.lld4.productservice.controllers;
 
+import com.lld4.productservice.auth.AuthUtils;
 import com.lld4.productservice.dtos.ProductDTO;
+import com.lld4.productservice.dtos.UserDto;
 import com.lld4.productservice.exceptions.InvalidProductException;
 import com.lld4.productservice.models.Category;
 import com.lld4.productservice.models.Product;
+import com.lld4.productservice.models.Token;
 import com.lld4.productservice.services.ProductService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -20,9 +23,11 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final AuthUtils authUtils;
 
-    ProductController(@Qualifier("selfProductService") ProductService productService) {
+    ProductController(@Qualifier("selfProductService") ProductService productService, AuthUtils authUtils) {
         this.productService = productService;
+        this.authUtils = authUtils;
     }
 
     // http://localhost:9090/products/5
@@ -35,10 +40,20 @@ public class ProductController {
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @GetMapping
-    public List<Product> getAllProducts() {
+    /*
+        I want to make this method only accessible by authorised user only.
+
+     */
+
+    @PostMapping("/v1")
+    public ResponseEntity<List<Product>> getAllProducts(@RequestBody Token token) {
+        UserDto userDto = authUtils.validateToken(token);
+        if (userDto == null) {
+            return new ResponseEntity<>( HttpStatus.UNAUTHORIZED);
+        }
+
         List<Product> products = productService.getAllProducts();
-        return products;
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @PostMapping
