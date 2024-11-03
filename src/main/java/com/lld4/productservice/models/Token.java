@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class Token extends BaseModel {
+public class Token {
     private String value;
     private User user;
     private Date expiryDate;

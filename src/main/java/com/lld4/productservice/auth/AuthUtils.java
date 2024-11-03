@@ -18,10 +18,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
 public class AuthUtils {
-    RestClient restClient;
-    Logger logger = LoggerFactory.getLogger(AuthUtils.class);
+    private final RestClient restClient;
+    private final Logger logger = LoggerFactory.getLogger(AuthUtils.class);
 
-    AuthUtils(RestClient restClient) {
+    public AuthUtils(RestClient restClient) {
         this.restClient = restClient;
     }
 
@@ -30,7 +30,7 @@ public class AuthUtils {
         try {
             userDto = restClient.post().uri("http://localhost:8080/users/validateToken").body(token).retrieve().body(UserDto.class);
         } catch (Exception e) {
-           logger.info("Error while validating token");
+            logger.info("Error while validating token");
         }
 
         return userDto;
