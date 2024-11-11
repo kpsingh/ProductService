@@ -48,8 +48,8 @@ public class ProductController {
     @PostMapping("/v1")
     public ResponseEntity<List<Product>> getAllProducts(@RequestBody Token token) {
         /*
-        validate the token by calling the User Service.
-        this call the user microservice's validateToken API to validate the token
+            validate the token by calling the User Service.
+            this call the user microservice's validateToken API to validate the token
          */
         UserDto userDto = authUtils.validateToken(token);
 
