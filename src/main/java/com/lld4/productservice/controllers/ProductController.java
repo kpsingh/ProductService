@@ -6,6 +6,7 @@ import com.lld4.productservice.dtos.UserDto;
 import com.lld4.productservice.exceptions.InvalidProductException;
 import com.lld4.productservice.models.Category;
 import com.lld4.productservice.models.Product;
+import com.lld4.productservice.models.Role;
 import com.lld4.productservice.models.Token;
 import com.lld4.productservice.services.ProductService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,6 +43,7 @@ public class ProductController {
 
     /*
         I want to make this method only accessible by authorised user only.
+        Also, let say even if user is valid then user with role ADMIN only can access this method.
 
      */
 
@@ -56,6 +58,19 @@ public class ProductController {
         if (userDto == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+
+        boolean isAdmin = false;
+        for(Role role : userDto.getRoles()) {
+            if(role.getRoleName().equalsIgnoreCase("ADMIN")){
+                isAdmin = true;
+                break;
+            }
+        }
+        if(!isAdmin){
+            // if user is not admin then we can throw the access denied from here.
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
 
         List<Product> products = productService.getAllProducts();
         return new ResponseEntity<>(products, HttpStatus.OK);
