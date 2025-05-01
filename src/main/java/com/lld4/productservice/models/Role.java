@@ -9,4 +9,9 @@ import lombok.Setter;
 public class Role extends BaseModel{
     private String roleName;
 
+    public Role(String roleName) {
+        this.roleName = roleName;
+    }
 }
+
+
