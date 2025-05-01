@@ -48,6 +48,32 @@ public class ProductController {
      */
 
     @PostMapping("/v1")
+    public ResponseEntity<Product> getProductByIdV1(@RequestBody Token token, @RequestParam Long id) {
+        /*
+            validate the token by calling the User Service.
+            this call the user microservice's validateToken API to validate the token
+         */
+        UserDto userDto = authUtils.validateToken(token);
+
+        if (userDto == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        boolean isAdmin = false;
+        for(Role role : userDto.getRoles()) {
+            if(role.getRoleName().equalsIgnoreCase("ADMIN")){
+                isAdmin = true;
+                break;
+            }
+        }
+        if(!isAdmin){
+            // if user is not admin then we can throw the access denied from here.
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        Product product = productService.getProductById(id);
+        return new ResponseEntity<>(product, HttpStatus.OK);
+    }
     public ResponseEntity<List<Product>> getAllProducts(@RequestBody Token token) {
         /*
             validate the token by calling the User Service.
